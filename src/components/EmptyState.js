@@ -1,94 +1,94 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
+import { COLORS } from '../constants/colors';
 
-/**
- * Componente exibido quando a lista de missões está vazia.
- */
-export default function EmptyState({ filter = 'ALL', onAddMission }) {
-  // Ajusta o texto e ícone de acordo com o contexto do filtro
-  let title = 'Nenhuma missão por aqui!';
-  let description = 'Crie sua primeira missão e comece o desafio agora mesmo.';
-  let showButton = true;
-
-  if (filter === 'PENDING') {
-    title = 'Tudo em dia!';
-    description = 'Você não possui missões pendentes no momento.';
-    showButton = false;
-  } else if (filter === 'COMPLETED') {
-    title = 'Nenhuma missão concluída';
-    description = 'Marque suas tarefas como concluídas para vê-las aqui.';
-    showButton = false;
-  }
-
+export default function EmptyState({ onAdd }) {
   return (
     <View style={styles.container}>
-      <View style={styles.iconCircle}>
-        <Ionicons name="rocket-outline" size={48} color="#2563EB" />
+      <View style={styles.circle}>
+        <Ionicons
+          name="library-outline"
+          size={55}
+          color="#C99494"
+        />
       </View>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
 
-      {showButton && (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.actionButton}
-          onPress={onAddMission} 
-          > 
-          <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" />
-          <Text style={styles.actionButtonText}>Criar primeira missão</Text>
-        </TouchableOpacity>
-      )}
+      <Text style={styles.title}>
+        Sua estante está vazia
+      </Text>
+
+      <Text style={styles.description}>
+        Que tal adicionar seu primeiro livro?
+      </Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onAdd}
+      >
+        <Ionicons
+          name="add"
+          size={17}
+          color="#FFF"
+        />
+
+        <Text style={styles.buttonText}>
+          Adicionar livro
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
-    marginTop: 24,
+    paddingBottom: 60,
   },
-  iconCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#EFF6FF',
+
+  circle: {
+    width: 125,
+    height: 125,
+    borderRadius: 70,
+    backgroundColor: '#F2E2DF',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 25,
   },
+
   title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 8,
+    color: COLORS.text,
+    fontSize: 15,
+    fontWeight: '600',
   },
+
   description: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 20,
+    color: COLORS.textLight,
+    fontSize: 11,
+    marginTop: 7,
   },
-  actionButton: {
+
+  button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2563EB',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    gap: 8,
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: COLORS.primaryLight,
+    paddingHorizontal: 19,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 22,
   },
-  actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
+
+  buttonText: {
+    color: '#FFF',
+    fontSize: 11,
+    marginLeft: 5,
   },
 });

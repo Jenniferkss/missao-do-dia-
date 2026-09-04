@@ -1,53 +1,107 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/**
- * Chave única utilizada para salvar as missões no armazenamento local do aparelho.
- */
-const STORAGE_KEY = '@missao_do_dia:missions';
+const BOOKS_KEY = '@readly_books';
 
-/**
- * Busca todas as missões salvas no AsyncStorage.
- * @returns {Promise<Array>} Lista de missões ou array vazio.
- */
-export async function getMissions() {
-    try {
-        const jsonValue = await AsyncStorage.getItem(STORAGE_KEY);
-        if (jsonValue !== null) {
-            return JSON.parse(jsonValue);
-        }
-        return [];
-    } catch (error) {
-        console.error('Erro ao ler missões do AsyncStorage:', error);
-        throw new Error('Não foi possível carregar as missões salvas.');
-    }
-}
-
-/**
- * Salva a lista completa de missões no AsyncStorage.
- * @param {Array} missions - Lista de objetos de missão.
- * @returns {Promise<void>}
- */
-export async function saveMissions(missions) {
-    try {
-        const jsonValue = JSON.stringify(missions);
-        await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
-    } catch (error) {
-        console.error('Erro ao salvar missões no AsyncStorage:', error);
-        // [Imagem cortada aqui]
-    }
-}
-
-/**
- * Remove todas as missões do AsyncStorage (útil para testes e reset).
- * @returns {Promise<void>}
- */
-export async function clearAllMissions() {
+export async function getBooks() {
   try {
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    const data = await AsyncStorage.getItem(BOOKS_KEY);
+
+    if (!data) {
+      return [];
+    }
+
+    return JSON.parse(data);
   } catch (error) {
-    console.error('Erro ao limpar missões do AsyncStorage:', error);
-    throw new Error('Não foi possível limpar o armazenamento.');
+    console.log('Erro ao buscar livros:', error);
+    return [];
   }
 }
 
-//FIM
+export async function getBookById(id) {
+  const books = await getBooks();
+
+  return books.find(book => book.id === id);
+}
+
+export async function createBook(book) {
+  try {
+    const books = await getBooks();
+
+    const newBook = {
+      ...book,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedBooks = [...books, newBook];
+
+    await AsyncStorage.setItem(
+      BOOKS_KEY,
+      JSON.stringify(updatedBooks)
+    );
+
+    return newBook;
+  } catch (error) {
+    console.log('Erro ao criar livro:', error);
+    throw error;
+  }
+}
+
+export async function updateBook(id, data) {
+  try {
+    const books = await getBooks();
+
+    const updatedBooks = books.map(book => {
+      if (book.id === id) {
+        return {
+          ...book,
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+
+      return book;
+    });
+
+    await AsyncStorage.setItem(
+      BOOKS_KEY,
+      JSON.stringify(updatedBooks)
+    );
+
+    return updatedBooks.find(book => book.id === id);
+  } catch (error) {
+    console.log('Erro ao atualizar livro:', error);
+    throw error;
+  }
+}
+
+export async function deleteBook(id) {
+  try {
+    const books = await getBooks();
+
+    const updatedBooks = books.filter(
+      book => book.id !== id
+    );
+
+    await AsyncStorage.setItem(
+      BOOKS_KEY,
+      JSON.stringify(updatedBooks)
+    );
+
+    return true;
+  } catch (error) {
+    console.log('Erro ao excluir livro:', error);
+    throw error;
+  }
+}
+
+export async function initializeBooks() {
+  const books = await AsyncStorage.getItem(BOOKS_KEY);
+
+  if (!books) {
+    await AsyncStorage.setItem(
+      BOOKS_KEY,
+      JSON.stringify([])
+    );
+  }
+}
